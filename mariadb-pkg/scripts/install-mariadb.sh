@@ -115,34 +115,37 @@ patch_mariadb_cnf() {
 
   cp ${apl_mariadb_cnf_template_file} ${apl_mariadb_cnf_file}
 
-  sed -i ".bak" "s/port=(.+)/port=${db_port}/g" ${apl_mariadb_cnf_file}
+  sed --in-place=".bak" -e "s/port=(.+)/port=${db_port}/g" ${apl_mariadb_cnf_file}
 
   pattern='${apl_db_dir}'
-  sed -i ".bak" "s|${pattern}|${apl_db_dir}|g" ${apl_mariadb_cnf_file}
+  sed --in-place=".bak" -e "s|${pattern}|${apl_db_dir}|g" ${apl_mariadb_cnf_file}
 
   pattern='${db_data_dir}'
-  sed -i ".bak" "s|${pattern}|${db_data_dir}|g" ${apl_mariadb_cnf_file}
+  sed --in-place=".bak" -e "s|${pattern}|${db_data_dir}|g" ${apl_mariadb_cnf_file}
 
   pattern='${db_tmp_dir}'
-  sed -i ".bak" "s|${pattern}|${db_tmp_dir}|g" ${apl_mariadb_cnf_file}
+  sed --in-place=".bak" -e "s|${pattern}|${db_tmp_dir}|g" ${apl_mariadb_cnf_file}
 
   pattern='${apl_mariadb_pkg_dir}'
-  sed -i ".bak" "s|${pattern}|${apl_mariadb_pkg_dir}|g" ${apl_mariadb_cnf_file}
+  sed --in-place=".bak" -e "s|${pattern}|${apl_mariadb_pkg_dir}|g" ${apl_mariadb_cnf_file}
 
 }
 
 #Wait until service starting
 #$1 service name
 #
-wait_service_to_start() {
+wait_dbserver_to_start() {
 local servicename=$1
 local count=0
 local kwait=5
 
-  while ! pgrep -f "$servicename" &> /dev/null; do
+  while ! ${apl_mariadb_pkg_dir}/bin/mariadb --defaults-file=${apl_mariadb_cnf_file} -u ${db_user} -s --skip-column-names -e 'select 1;' &> /dev/null; do
     sleep 1
     (( ++count > kwait )) && break
   done
+
+  ${apl_mariadb_pkg_dir}/bin/mariadb --defaults-file=${apl_mariadb_cnf_file} -u ${db_user} -s --skip-column-names -e 'select 1;' &> /dev/null
+  [ ! $? -eq 0 ] && exit_error "Execution error."
 
 }
 
@@ -264,18 +267,21 @@ ${apl_mariadb_pkg_dir}/bin/mariadbd --defaults-file=${apl_mariadb_cnf_file} --ve
 curr_step=$((curr_step+1))
 
 #wait until the DB server starting 
-wait_service_to_start "${apl_mariadb_cnf_file}"
+wait_dbserver_to_start
 
 echo "$curr_step/$all_steps. Change user password"  | writelog
 echo "cmd: ${apl_mariadb_pkg_dir}/bin/mariadb-admin --defaults-file=${apl_mariadb_cnf_file} -u ${db_user} password ${db_user}" | writelog
-${apl_mariadb_pkg_dir}/bin/mariadb-admin --defaults-file=${apl_mariadb_cnf_file} -u ${db_user} password ${db_user} | writelog
+${apl_mariadb_pkg_dir}/bin/mariadb-admin --defaults-file=${apl_mariadb_cnf_file} -u ${db_user} password ${db_user}
 [ ! $? -eq 0 ] && exit_error "Execution error."
 curr_step=$((curr_step+1))
 
 echo "$curr_step/$all_steps. Check updated password"  | writelog
-echo "cmd: ${apl_mariadb_pkg_dir}/bin/mariadb --defaults-file=${apl_mariadb_cnf_file} -u ${db_user} -s -e 'select 1;'" | writelog
-${apl_mariadb_pkg_dir}/bin/mariadb --defaults-file=${apl_mariadb_cnf_file} -u ${db_user} -s -e 'select 1;' | writelog
+echo "cmd: ${apl_mariadb_pkg_dir}/bin/mariadb --defaults-file=${apl_mariadb_cnf_file} -u ${db_user} -s -e \"select password from user where user=\"${db_user}\";\" --skip-column-names mysql" | writelog
+password=`${apl_mariadb_pkg_dir}/bin/mariadb --defaults-file=${apl_mariadb_cnf_file} -u ${db_user} -s -e "select password from user where user=\"${db_user}\";" --skip-column-names mysql`
 [ ! $? -eq 0 ] && exit_error "Execution error."
+[ -z $password ] && exit_error "Unknown db user: ${db_user}"
+[ "X$password" == "Xinvalid" ] && exit_error "Password wasn't set."
+#echo "PASSWORD=$password"
 curr_step=$((curr_step+1))
 
 echo "Script done at "`date "+%Y-%m-%d %H:%M:%S"` | writelog
