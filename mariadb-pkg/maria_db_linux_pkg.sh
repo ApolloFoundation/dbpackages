@@ -62,6 +62,14 @@ echo "}" >> $PF
 cd ../
 mv  ../../$DIR_NAME apollo-mariadb
 cd apollo-mariadb
+mkdir conf
+cp ../../../scripts/my-apl.cnf conf/my-apl.cnf.template
+[ ! $? -eq 0 ] && exit 1
+
+cp ../../../scripts/install-mariadb.sh ./
+[ ! $? -eq 0 ] && exit 1
+
+chmod +x install-mariadb.sh
 
 FILES_TO_DEL=""
 DIRS_TO_DEL="include sql-bench man mysql-test"
