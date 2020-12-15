@@ -28,8 +28,10 @@ __ENDHELP__
 if [[ "$OSTYPE" == "darwin"* ]]; then
 # Mac OSX
   BASE_DIR=$(cd "`dirname "$0"`"; pwd -P)
+  sed_i_opt="-i '.bak'"
 else
   BASE_DIR=$(dirname $(readlink -e "$0"))
+  sed_i_opt="-i"
 fi
 
 cmd_params=$@
@@ -115,19 +117,19 @@ patch_mariadb_cnf() {
 
   cp ${apl_mariadb_cnf_template_file} ${apl_mariadb_cnf_file}
 
-  sed --in-place=".bak" -e "s/port=(.+)/port=${db_port}/g" ${apl_mariadb_cnf_file}
+  sed ${sed_i_opt} -e "s/port=(.+)/port=${db_port}/g" ${apl_mariadb_cnf_file}
 
   pattern='${apl_db_dir}'
-  sed --in-place=".bak" -e "s|${pattern}|${apl_db_dir}|g" ${apl_mariadb_cnf_file}
+  sed ${sed_i_opt} -e "s|${pattern}|${apl_db_dir}|g" ${apl_mariadb_cnf_file}
 
   pattern='${db_data_dir}'
-  sed --in-place=".bak" -e "s|${pattern}|${db_data_dir}|g" ${apl_mariadb_cnf_file}
+  sed ${sed_i_opt} -e "s|${pattern}|${db_data_dir}|g" ${apl_mariadb_cnf_file}
 
   pattern='${db_tmp_dir}'
-  sed --in-place=".bak" -e "s|${pattern}|${db_tmp_dir}|g" ${apl_mariadb_cnf_file}
+  sed ${sed_i_opt} -e "s|${pattern}|${db_tmp_dir}|g" ${apl_mariadb_cnf_file}
 
   pattern='${apl_mariadb_pkg_dir}'
-  sed --in-place=".bak" -e "s|${pattern}|${apl_mariadb_pkg_dir}|g" ${apl_mariadb_cnf_file}
+  sed ${sed_i_opt} -e "s|${pattern}|${apl_mariadb_pkg_dir}|g" ${apl_mariadb_cnf_file}
 
 }
 
