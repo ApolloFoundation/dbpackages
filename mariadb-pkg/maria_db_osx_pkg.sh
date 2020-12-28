@@ -41,6 +41,8 @@ cd apollo-mariadb
 mkdir conf
 cp ../../../scripts/my-apl.cnf conf/my-apl.cnf.template
 [ ! $? -eq 0 ] && exit 1
+cp ../../../scripts/create_user.sql scripts/create_user.sql
+[ ! $? -eq 0 ] && exit 1
 
 cp ../../../scripts/install-mariadb.sh ./
 [ ! $? -eq 0 ] && exit 1

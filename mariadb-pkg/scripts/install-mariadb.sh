@@ -87,7 +87,7 @@ fi
 if [[ -n ${apl_db_dir_param} ]]; then
   apl_db_dir=${apl_db_dir_param}
 else
-  apl_db_dir="${apl_base_dir}/apollo-blockchain-db"
+  apl_db_dir="${apl_base_dir}/apl-blockchain-db"
 fi
 
 apl_mariadb_pkg_dir="${apl_base_dir}/apollo-mariadb"
@@ -96,7 +96,7 @@ db_data_dir="${apl_db_dir}/data"
 apl_mariadb_cnf_template_file="${apl_mariadb_pkg_dir}/conf/my-apl.cnf.template"
 apl_mariadb_cnf_file="${apl_mariadb_pkg_dir}/conf/my-apl.cnf"
 mariadb_install_script="${apl_mariadb_pkg_dir}/scripts/mariadb-install-db"
-
+mariadb_create_user_sql="${apl_mariadb_pkg_dir}/scripts/create_user.sql"
 #Get property value
 #$1 properties file
 #$2 property name
@@ -147,7 +147,7 @@ local kwait=5
   done
 
   ${apl_mariadb_pkg_dir}/bin/mariadb --defaults-file=${apl_mariadb_cnf_file} -u ${db_user} -s --skip-column-names -e 'select 1;' &> /dev/null
-  [ ! $? -eq 0 ] && exit_error "Execution error."
+  [ ! $? -eq 0 ] && exit_error "MariaDB server not started."
 
 }
 
@@ -244,7 +244,7 @@ check_mariadb_pkg
 
 [ ! -f ${apl_property_file} ] && exit_error "Can't locate the property file: ${apl_property_file}"
 
-all_steps=6
+all_steps=8
 curr_step=1
 
 echo "$curr_step/$all_steps. Create directories"  | writelog
@@ -270,6 +270,19 @@ curr_step=$((curr_step+1))
 
 #wait until the DB server starting 
 wait_dbserver_to_start
+
+echo "$curr_step/$all_steps. Create new db user: apl"  | writelog
+echo "cmd: ${apl_mariadb_pkg_dir}/bin/mariadb --defaults-file=${apl_mariadb_cnf_file} -u ${db_user} -s < ${mariadb_create_user_sql}"  | writelog
+${apl_mariadb_pkg_dir}/bin/mariadb --defaults-file=${apl_mariadb_cnf_file} -u ${db_user} -s < ${mariadb_create_user_sql}
+[ ! $? -eq 0 ] && exit_error "Execution error."
+curr_step=$((curr_step+1))
+
+echo "$curr_step/$all_steps. Check user privileges"  | writelog
+echo "cmd: ${apl_mariadb_pkg_dir}/bin/mariadb --defaults-file=${apl_mariadb_cnf_file} -u ${db_user} -s -e \"SHOW GRANTS FOR 'apl'@localhost;\" --skip-column-names mysql" | writelog
+privileges=`${apl_mariadb_pkg_dir}/bin/mariadb --defaults-file=${apl_mariadb_cnf_file} -u ${db_user} -s -e "SHOW GRANTS FOR 'apl'@localhost;" --skip-column-names mysql|grep 'GRANT ALL PRIVILEGES ON \*.\* TO \`apl\`@\`localhost\`'`
+[ ! $? -eq 0 ] && exit_error "Execution error."
+[ "X$privileges" == "X" ] && exit_error "Privileges wasn't set correctly for user: apl@localhost"
+curr_step=$((curr_step+1))
 
 echo "$curr_step/$all_steps. Change user password"  | writelog
 echo "cmd: ${apl_mariadb_pkg_dir}/bin/mariadb-admin --defaults-file=${apl_mariadb_cnf_file} -u ${db_user} password ${db_user}" | writelog
