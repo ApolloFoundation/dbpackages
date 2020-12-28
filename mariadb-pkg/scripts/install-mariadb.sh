@@ -232,7 +232,6 @@ echo "apl_db_dir=${apl_db_dir}" | writelog
 echo "apl_conf_dir=${apl_conf_dir}" | writelog
 echo "db_tmp_dir=${db_tmp_dir}" | writelog
 echo "db_data_dir=${db_data_dir}" | writelog
-echo "apl_property_file=${apl_property_file}" | writelog
 echo "apl_mariadb_cnf_file=${apl_mariadb_cnf_file}" | writelog
 echo "db_port=${db_port}" | writelog
 echo "db_user=${db_user}" | writelog
@@ -241,8 +240,6 @@ echo "db_password=${db_user}" | writelog
 echo "---" | writelog
 
 check_mariadb_pkg
-
-[ ! -f ${apl_property_file} ] && exit_error "Can't locate the property file: ${apl_property_file}"
 
 all_steps=8
 curr_step=1
