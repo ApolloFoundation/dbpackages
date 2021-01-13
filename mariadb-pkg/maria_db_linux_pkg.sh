@@ -25,12 +25,6 @@ then
  exit 2
 fi
 
-if ! patchelf --version >>/dev/null
-then
- echo "Please install patchelf"
- exit 2
-fi
-
 DNLD_RES=0
 for index in ${!FILES[*]} ; do
     file=${FILES[index]}
