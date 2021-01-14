@@ -25,6 +25,13 @@ then
  exit 2
 fi
 
+if ! patchelf --version >/dev/null
+then
+ echo "Please install patchelf"
+ exit 2
+fi
+
+
 DNLD_RES=0
 for index in ${!FILES[*]} ; do
     file=${FILES[index]}
@@ -65,7 +72,17 @@ undeb() {
 
 copy_libs() {
   echo "Copying libraries"
-  cp --preserve=links debs/lib/x86_64-linux-gnu/* $target/ApolloWallet/apollo-mariadb/bin
+  cp --preserve=links debs/lib/x86_64-linux-gnu/* $target/ApolloWallet/apollo-mariadb/lib
+}
+
+patch_bin() {
+    ret_dir=`pwd`
+    cd $target/ApolloWallet/apollo-mariadb/bin
+    FILES_TO_PATCH="mariadb"
+    for file in $FILES_TO_PATCH ; do
+        patchelf --set-rpath '$ORIGIN/../lib' mariadb
+    done    
+    cd $ret_dir
 }
 
 gen_pkg_json () {
@@ -134,7 +151,7 @@ cd ../../../
 undeb ${FILES[1]}
 undeb ${FILES[2]}
 copy_libs
-
+patch_bin
 delete_extra_from_dist
 gen_pkg_json
 
