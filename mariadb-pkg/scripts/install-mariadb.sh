@@ -125,9 +125,9 @@ patch_mariadb_cnf() {
   pattern='${db_data_dir}'
   sed ${sed_i_opt} -e "s|${pattern}|${db_data_dir}|g" ${apl_mariadb_cnf_file}
 
-  pattern='${db_tmp_dir}'
-  sed ${sed_i_opt} -e "s|${pattern}|${db_tmp_dir}|g" ${apl_mariadb_cnf_file}
-
+#  pattern='${db_tmp_dir}'
+#  sed ${sed_i_opt} -e "s|${pattern}|${db_tmp_dir}|g" ${apl_mariadb_cnf_file}
+#
   pattern='${apl_mariadb_pkg_dir}'
   sed ${sed_i_opt} -e "s|${pattern}|${apl_mariadb_pkg_dir}|g" ${apl_mariadb_cnf_file}
 

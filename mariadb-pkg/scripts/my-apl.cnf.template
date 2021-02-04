@@ -9,8 +9,8 @@
     default-storage-engine=rocksdb
     max_connections=1024
 
-    datadir=${db_data_dir}
-    tmpdir=${db_tmp_dir}
+    datadir=${apl_db_dir}/data
+    tmpdir=${apl_db_dir}/tmp
     socket=${apl_db_dir}/mariadb.sock
     log-error=${apl_db_dir}/mariadb.log
     pid-file=${apl_db_dir}/mariadb.pid
