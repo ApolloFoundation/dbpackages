@@ -19,5 +19,7 @@
 *.zip.sha256
 *.tar.gz
 *.rar
+*.tar
+*.deb
 
 hs_err_pid*
