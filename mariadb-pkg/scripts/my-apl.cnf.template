@@ -1,0 +1,23 @@
+[client-server]
+    port=3366
+    socket=${apl_db_dir}/mariadb.sock
+
+[mysqld]
+# Only allow connections from localhost
+    bind-address = 127.0.0.1
+    lower_case_table_names=2
+    default-storage-engine=rocksdb
+    max_connections=1024
+
+    datadir=${apl_db_dir}/data
+    tmpdir=${apl_db_dir}/tmp
+    socket=${apl_db_dir}/mariadb.sock
+    log-error=${apl_db_dir}/mariadb.log
+    pid-file=${apl_db_dir}/mariadb.pid
+
+    basedir=${apl_mariadb_pkg_dir}
+
+[mariadb]
+    plugin_load_add = ha_rocksdb
+    rocksdb_max_row_locks=1073741824
+

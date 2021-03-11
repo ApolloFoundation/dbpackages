@@ -38,6 +38,16 @@ echo "}" >> $PF
 cd ..
 
 cd apollo-mariadb
+mkdir conf
+cp ../../../scripts/my-apl.cnf conf/my-apl.cnf.template
+[ ! $? -eq 0 ] && exit 1
+cp ../../../scripts/create_user.sql scripts/create_user.sql
+[ ! $? -eq 0 ] && exit 1
+
+cp ../../../scripts/install-mariadb.sh ./
+[ ! $? -eq 0 ] && exit 1
+
+chmod +x install-mariadb.sh
 
 FILES_TO_DEL="INSTALL_RECEIPT.json homebrew.mxcl.mariadb.plist"
 DIRS_TO_DEL="include .brew .bottle"

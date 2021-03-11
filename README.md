@@ -8,5 +8,7 @@ format tha is used by Apollo installers.
 MariaDB does not provide officiall builds for MacOS, so MacOS script uses "Brew" to install MariaDB and then repacks it.
 The script should be run on MacOS.
 
+Stable brtanch is "master".
+
 For more recent version please use "develop" branch
 

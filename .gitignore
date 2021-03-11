@@ -1,0 +1,23 @@
+/.idea
+*.iml
+*/build
+*/target
+*/target-*/
+
+# Compiled class file
+*.class
+
+# Log file
+*.log
+
+# Package Files #
+*.jar
+*.war
+*.nar
+*.ear
+*.zip
+*.zip.sha256
+*.tar.gz
+*.rar
+
+hs_err_pid*

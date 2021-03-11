@@ -1,0 +1,3 @@
+CREATE USER IF NOT EXISTS 'apl'@localhost IDENTIFIED BY 'apl';
+GRANT ALL PRIVILEGES ON *.* TO 'apl'@localhost;
+FLUSH PRIVILEGES;
