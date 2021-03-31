@@ -44,7 +44,7 @@ cp ../../..//mariadb-pkg/scripts/my-apl.cnf.template conf/my-apl.cnf.template
 cp ../../../mariadb-pkg/scripts/create_user.sql scripts/create_user.sql
 [ ! $? -eq 0 ] && exit 1
 
-cp ../../../scripts/install-mariadb.sh ./
+cp ../../../mariadb-pkg/scripts/install-mariadb.sh ./
 [ ! $? -eq 0 ] && exit 1
 
 chmod +x install-mariadb.sh
