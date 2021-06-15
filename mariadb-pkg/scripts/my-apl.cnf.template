@@ -1,3 +1,11 @@
+
+    #                             USEFUL LINKS FOR MARIADB TUNING
+    # MyRocks system variables: https://mariadb.com/kb/en/myrocks-system-variables
+    # RocksDB memory usage by the Facebook developers: https://github.com/facebook/rocksdb/wiki/Memory-usage-in-RocksDB
+    # my.cnf tuning by the Facebook developers: https://github.com/facebook/mysql-5.6/wiki/my.cnf-tuning
+    # InnoDB vs MyRocks in highload: https://dzone.com/articles/a-look-at-myrocks-performance
+    # MyRocks and highload: https://www.slideshare.net/atezuysal/when-is-my-rocks-good-highload-2019
+
 [client-server]
     port=3366
     socket=${apl_db_dir}/mariadb.sock
@@ -5,9 +13,32 @@
 [mysqld]
 # Only allow connections from localhost
     bind-address = 127.0.0.1
-    lower_case_table_names=2
+    # Forcing lower case for table names is recommended for different host operation systems: https://dev.mysql.com/doc/refman/8.0/en/identifier-case-sensitivity.html
+    lower_case_table_names=1
     default-storage-engine=rocksdb
     max_connections=1024
+    transaction-isolation=READ-COMMITTED
+
+     # Charset configuration, utf8mb4 for all
+    init-connect='SET NAMES utf8mb4'
+    character-set-server=utf8mb4
+    collation-server=utf8mb4_unicode_ci
+    skip-character-set-client-handshake
+
+    # Lower buffer size for the MyISAM indexes to 1MB, MyISAM engine is not used for the apollo-blockchain application
+    key_buffer_size=1M
+
+    # Lower innodb buffer size to 5MB, InnoDB engine is not used for the apollo-blockchain application
+    innodb_buffer_pool_size=5M
+
+    # Query cache is not used
+    query_cache_size=0
+    query_cache_type=OFF
+
+    # Do not store binary logs longer than 2 months
+    expire_logs_days = 60
+
+
 
     datadir=${apl_db_dir}/data
     tmpdir=${apl_db_dir}/tmp
@@ -21,3 +52,19 @@
     plugin_load_add = ha_rocksdb
     rocksdb_max_row_locks=1073741824
 
+     # Deadlock detection
+    rocksdb_deadlock_detect=true
+    rocksdb_print_snapshot_conflict_queries=true
+
+    # No limit for the MyRocks indexes
+    rocksdb_max_open_files=-1
+    # 512 MB for the in-memory uncompressed blocks cache
+    rocksdb_block_cache_size=512M
+
+    # rate limiter
+    rocksdb_bytes_per_sync=4M
+    rocksdb_wal_bytes_per_sync=4M
+    rocksdb_rate_limiter_bytes_per_sec=100M #100MB/s. Increase if you're running on higher spec machines
+
+    # Best performance options: https://github.com/facebook/mysql-5.6/wiki/my.cnf-tuning
+    rocksdb_default_cf_options=write_buffer_size=128m;target_file_size_base=32m;max_bytes_for_level_base=512m;level0_file_num_compaction_trigger=4;level0_slowdown_writes_trigger=10;level0_stop_writes_trigger=15;max_write_buffer_number=2;compression_per_level=kNoCompression;bottommost_compression=kZSTD;compression_opts=-14:6:0;block_based_table_factory={cache_index_and_filter_blocks=1;filter_policy=bloomfilter:10:false;whole_key_filtering=0};level_compaction_dynamic_level_bytes=true;optimize_filters_for_hits=true;memtable_prefix_bloom_size_ratio=0.05;prefix_extractor=capped:12;compaction_pri=kMinOverlappingRatio
