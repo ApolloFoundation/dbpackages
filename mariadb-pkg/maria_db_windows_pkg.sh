@@ -1,6 +1,6 @@
 #!/bin/bash
 
-MARIADB_VER="10.5.8"
+MARIADB_VER="10.10.2"
 DIR_NAME="mariadb-$MARIADB_VER-winx64"
 FNAME="$DIR_NAME.zip"
 MARIADB_URL=https://downloads.mariadb.org/rest-api/mariadb/$MARIADB_VER/$FNAME
@@ -23,10 +23,16 @@ then
  exit 2
 fi
 
+if ! zstd --version >/dev/null
+then
+ echo "Please install zstd"
+ exit 2
+fi
+
 DNLD_RES=0
 if [ -r $FNAME ]
 then
- echo "$FNAME already exists. Skiping download" 
+ echo "$FNAME already exists. Skipping download"
 else
  wget $MARIADB_URL
  DNLD_RES=$?
