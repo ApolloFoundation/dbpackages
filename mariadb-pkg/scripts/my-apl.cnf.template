@@ -37,6 +37,8 @@
 
     # Do not store binary logs longer than 2 months
     expire_logs_days = 60
+    slow_query_log=1  # for ON to enable the function - rather than your filename
+    slow_query_log_file=${apl_db_dir}/slow-query.log  # for the destination path and filename
 
 
 
