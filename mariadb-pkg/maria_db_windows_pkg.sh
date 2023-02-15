@@ -55,7 +55,8 @@ if [ -d $target ]
 then
  rm -rf $target
 fi
-PWD=`pwd`
+PWD="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null && pwd )"
+# "
 mkdir $target
 cd $target
 mkdir ApolloWallet

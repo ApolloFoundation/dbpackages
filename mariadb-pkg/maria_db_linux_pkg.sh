@@ -15,7 +15,9 @@ NCURSES_TLIB=libtinfo5_6.3-2_amd64.deb
 FILES=($FNAME $NCURSES_NLIB $NCURSES_TLIB)
 URLS=($MARIADB_URL $NCURSES_URL$NCURSES_NLIB $NCURSES_URL$NCURSES_TLIB)
 
-CURRENT_ROOT_DIR="$(pwd)"
+CURRENT_ROOT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null && pwd )"
+
+# "
 
 if ! wget -V >/dev/null
 then
