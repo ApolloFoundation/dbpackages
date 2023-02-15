@@ -159,12 +159,12 @@ echo "-->> Before copying..."
 
 cd apollo-mariadb
 mkdir conf
-cp $CURRENT_ROOT_DIR/scripts/my-apl.cnf.template $CURRENT_ROOT_DIR/$target/ApolloWallet/apollo-mariadb/conf/my-apl.cnf.template
+cp -v $CURRENT_ROOT_DIR/scripts/my-apl.cnf.template $CURRENT_ROOT_DIR/$target/ApolloWallet/apollo-mariadb/conf/my-apl.cnf.template
 [ ! $? -eq 0 ] && exit 1
-cp $CURRENT_ROOT_DIR/scripts/create_user.sql $CURRENT_ROOT_DIR/$target/ApolloWallet/apollo-mariadb/scripts/create_user.sql
+cp -v $CURRENT_ROOT_DIR/scripts/create_user.sql $CURRENT_ROOT_DIR/$target/ApolloWallet/apollo-mariadb/scripts/create_user.sql
 [ ! $? -eq 0 ] && exit 1
 
-cp $CURRENT_ROOT_DIR/scripts/install-mariadb.sh $CURRENT_ROOT_DIR/$target/ApolloWallet/apollo-mariadb/
+cp -v $CURRENT_ROOT_DIR/scripts/install-mariadb.sh $CURRENT_ROOT_DIR/$target/ApolloWallet/apollo-mariadb/
 [ ! $? -eq 0 ] && exit 1
 
 chmod +x $CURRENT_ROOT_DIR/$target/ApolloWallet/apollo-mariadb/install-mariadb.sh
