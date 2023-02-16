@@ -149,6 +149,7 @@ fi
 
 echo "-->> Prepare folders... :" $CURRENT_ROOT_DIR " : " $target " : " $DIR_NAME
 PWD=`pwd`
+cd $CURRENT_ROOT_DIR
 mkdir $target
 cd $target
 mkdir ApolloWallet
